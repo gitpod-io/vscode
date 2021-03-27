@@ -1,0 +1,26 @@
+{
+	"name": "Gitpod Light",
+	"colors": {
+		"statusBarItem.remoteBackground": "#292524",
+        "statusBarItem.remoteForeground": "#f9f9f9",
+        "statusBar.background": "#FF8A00",
+        "statusBar.noFolderBackground": "#FF8A00",
+        "statusBar.debuggingBackground": "#FF8A00",
+        "sideBar.background": "#fcfcfc",
+        "sideBarSectionHeader.background": "#f9f9f9",
+        "activityBar.background": "#f9f9f9",
+        "activityBar.foreground": "#292524",
+        "editor.background": "#ffffff",
+        "button.background": "#FF8A00",
+        "button.foreground": "#ffffff",
+        "list.activeSelectionBackground": "#e7e5e4",
+        "list.activeSelectionForeground": "#292524",
+        "list.inactiveSelectionForeground": "#292524",
+        "list.inactiveSelectionBackground": "#F9F9F9",
+        "minimap.background": "#FCFCFC",
+        "minimapSlider.activeBackground": "#F9F9F9",
+        "tab.inactiveBackground": "#F9F9F9",
+        "editor.selectionBackground": "#FFE4BC",
+        "editor.inactiveSelectionBackground": "#FFE4BC"
+	}
+}

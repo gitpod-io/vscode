@@ -22,6 +22,14 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "themes": [
+      {
+        "id": "Gitpod Light",
+        "label": "%themeLabel%",
+        "uiTheme": "vs",
+        "path": "./themes/gitpod-light-color-theme.json"
+      }
+    ],
     "commands": [
       {
         "command": "gitpod.stop.ws",
