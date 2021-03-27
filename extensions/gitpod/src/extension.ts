@@ -707,19 +707,16 @@ export async function activate(context: vscode.ExtensionContext) {
 	//#endregion
 
 	//#region cli
-	const cliServerSocketsPath = process.env['GITPOD_CLI_SERVER_SOCKETS_PATH'];
 	const vscodeIpcHookCli = process.env['VSCODE_IPC_HOOK_CLI'];
-	if (cliServerSocketsPath && vscodeIpcHookCli) {
-		const cliServerSocketLink = path.join(cliServerSocketsPath, process.pid + '.socket');
-		(async () => {
-			try {
-				await util.promisify(fs.symlink)(vscodeIpcHookCli, cliServerSocketLink);
-			} catch (e) {
-				console.error('Failed to symlink cli server socket:', e);
+	if (vscodeIpcHookCli && process.send) {
+		const sendActiveCliIpcHookMessage = process.send.bind(process, { type: 'ACTIVE_CLI_IPC_HOOK', value: vscodeIpcHookCli });
+		function updateIpcHookCli(): void {
+			if (vscode.window.state.focused) {
+				sendActiveCliIpcHookMessage();
 			}
-		})();
-	} else {
-		console.error(`cannot create a symlink to the cli server socket, GITPOD_CLI_SERVER_SOCKETS_PATH="${vscodeIpcHookCli}", GITPOD_CLI_SERVER_SOCKETS_PATH="${cliServerSocketsPath}"`);
+		}
+		updateIpcHookCli();
+		context.subscriptions.push(vscode.window.onDidChangeWindowState(() => updateIpcHookCli()));
 	}
 	//#endregion
 

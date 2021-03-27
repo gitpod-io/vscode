@@ -31,7 +31,6 @@ import { ReadableStreamEventPayload } from 'vs/base/common/stream';
 import { URI } from 'vs/base/common/uri';
 import { IRawURITransformer, transformIncomingURIs, transformOutgoingURIs, URITransformer } from 'vs/base/common/uriIpc';
 import { generateUuid } from 'vs/base/common/uuid';
-import { readdir, rimraf } from 'vs/base/node/pfs';
 import { ClientConnectionEvent, IPCServer, IServerChannel } from 'vs/base/parts/ipc/common/ipc';
 import { PersistentProtocol, ProtocolConstants } from 'vs/base/parts/ipc/common/ipc.net';
 import { NodeSocket, WebSocketNodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
@@ -312,21 +311,12 @@ async function main(): Promise<void> {
 	const logService = new MultiplexLogService([new ConsoleMainLogger(getLogLevel(environmentService)), bufferLogService]);
 	registerErrorHandler(logService);
 
-	let cliServerSocketsPath = path.join(os.tmpdir(), 'gitpod-cli-server-sockets');
-	if (devMode) {
-		cliServerSocketsPath += '-dev';
-	}
-	cliServerSocketsPath = path.join(cliServerSocketsPath, generateUuid());
-	logService.info('CLI server sockets path: ' + cliServerSocketsPath);
-	await rimraf(cliServerSocketsPath).catch(() => { });
-
 	// see src/vs/code/electron-main/main.ts#204
 	await Promise.all<void | undefined>([
 		environmentService.extensionsPath,
 		environmentService.logsPath,
 		environmentService.globalStorageHome.fsPath,
-		environmentService.workspaceStorageHome.fsPath,
-		cliServerSocketsPath
+		environmentService.workspaceStorageHome.fsPath
 	].map(path => path ? fs.promises.mkdir(path, { recursive: true }) : undefined));
 
 	const onDidClientConnectEmitter = new Emitter<ClientConnectionEvent>();
@@ -672,6 +662,15 @@ async function main(): Promise<void> {
 
 		const clients = new Map<string, Client>();
 
+		interface ActiveCliIpcHooKMessage {
+			type: 'ACTIVE_CLI_IPC_HOOK'
+			value: string
+		}
+		function isActiveCliIpcHooKMessage(msg: any): msg is ActiveCliIpcHooKMessage {
+			return !!msg && (<ActiveCliIpcHooKMessage>msg).type === 'ACTIVE_CLI_IPC_HOOK';
+		}
+		let activeCliIpcHook: string | undefined;
+
 		const server = http.createServer(async (req, res) => {
 			if (!req.url) {
 				return serveError(req, res, 400, 'Bad Request.');
@@ -693,28 +692,20 @@ async function main(): Promise<void> {
 					return serveFile(logService, req, res, fsPath);
 				}
 
-				if (pathname === '/gitpod-cli-server-sockets') {
-					const linkNames = await readdir(cliServerSocketsPath);
-					const processes = new Set<string>();
-					clients.forEach(client => {
-						if (client.extensionHost) {
-							processes.add(String(client.extensionHost.pid));
-						}
-					});
-					const links: string[] = [];
-					for (const linkName of linkNames) {
-						const link = path.join(cliServerSocketsPath, linkName);
-						if (processes.has(path.parse(link).name)) {
-							try {
-								const socket = await fs.promises.realpath(link);
-								links.push(socket);
-							} catch {
-								/* no-op symlink is broken */
-							}
-						}
+				if (pathname === '/cli') {
+					if (!activeCliIpcHook) {
+						return serveError(req, res, 404, 'Not found.');
 					}
-					res.writeHead(200, { 'Content-Type': 'application/json' });
-					return res.end(JSON.stringify({ links }));
+					if (req.method !== 'POST') {
+						res.writeHead(200, { 'Content-Type': 'text/plain' });
+						return res.end(activeCliIpcHook);
+					}
+					req.pipe(http.request({
+						socketPath: activeCliIpcHook,
+						method: req.method,
+						headers: req.headers
+					}, res2 => res2.pipe(res)));
+					return;
 				}
 
 				if (devMode) {
@@ -931,8 +922,7 @@ async function main(): Promise<void> {
 										VSCODE_EXTHOST_WILL_SEND_SOCKET: 'true',
 										VSCODE_HANDLES_UNCAUGHT_ERRORS: 'true',
 										VSCODE_LOG_STACK: 'true',
-										VSCODE_LOG_LEVEL: environmentService.verbose ? 'trace' : environmentService.logLevel,
-										GITPOD_CLI_SERVER_SOCKETS_PATH: cliServerSocketsPath
+										VSCODE_LOG_LEVEL: environmentService.verbose ? 'trace' : environmentService.logLevel
 									},
 									// see https://github.com/akosyakov/gitpod-code/blob/33b49a273f1f6d44f303426b52eaf89f0f5cc596/src/vs/base/parts/ipc/node/ipc.cp.ts#L72-L78
 									execArgv: [],
@@ -970,10 +960,6 @@ async function main(): Promise<void> {
 									socket.end();
 									extensionHost.kill();
 									client.extensionHost = undefined;
-
-									fs.promises.unlink(path.join(cliServerSocketsPath, extensionHost.pid + '.socket')).catch(e => {
-										logService.error('Failed to unlink cli server socket:', e);
-									});
 								}
 
 								extensionHost.on('error', err => {
@@ -1002,6 +988,12 @@ async function main(): Promise<void> {
 									}
 								};
 								extensionHost.on('message', readyListener);
+								extensionHost.on('message', (msg: any) => {
+									if (isActiveCliIpcHooKMessage(msg)) {
+										activeCliIpcHook = msg.value;
+										console.log('on message: ' + activeCliIpcHook);
+									}
+								});
 								client.extensionHost = extensionHost;
 								logService.info(`[${token}] Extension host is started.`);
 							} catch (e) {
