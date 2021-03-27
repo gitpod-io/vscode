@@ -419,7 +419,7 @@ async function doStart(): Promise<IDisposable> {
 		homeIndicator,
 		windowIndicator: {
 			onDidChange: Event.None,
-			label: `$(remote) Gitpod`,
+			label: `$(gitpod) Gitpod`,
 			tooltip: 'Editing on Gitpod'
 		},
 		initialColorTheme: {
