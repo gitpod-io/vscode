@@ -1,0 +1,13 @@
+{
+	"name": "Gitpod Dark",
+	"include": "./dark_plus.json",
+	"colors": {
+		"statusBarItem.remoteBackground": "#292524",
+        "statusBarItem.remoteForeground": "#f9f9f9",
+        "statusBar.background": "#FF8A00",
+        "statusBar.noFolderBackground": "#FF8A00",
+        "statusBar.debuggingBackground": "#FF8A00",
+        "button.background": "#FF8A00",
+        "button.foreground": "#ffffff"
+	}
+}

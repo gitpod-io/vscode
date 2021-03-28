@@ -14,6 +14,18 @@
   "contributes": {
     "themes": [
       {
+        "id": "Gitpod Dark",
+        "label": "%gitpodDark%",
+        "uiTheme": "vs-dark",
+        "path": "./themes/gitpod-dark-color-theme.json"
+      },
+      {
+        "id": "Gitpod Light",
+        "label": "%gitpodLight%",
+        "uiTheme": "vs",
+        "path": "./themes/gitpod-light-color-theme.json"
+      },
+      {
         "id": "Default Dark+",
         "label": "%darkPlusColorThemeLabel%",
         "uiTheme": "vs-dark",

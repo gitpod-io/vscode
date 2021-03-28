@@ -1,7 +1,6 @@
 {
 	"displayName": "Gitpod",
 	"description": "Gitpod Integration Support",
-	"themeLabel": "Gitpod Light",
 	"openDashboard": "Gitpod: Open Dashboard",
 	"openAccessControl": "Gitpod: Open Access Control",
 	"openSettings": "Gitpod: Open Settings",
