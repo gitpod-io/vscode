@@ -34,15 +34,20 @@ const OPTIONS_KEYS: (keyof typeof ALL_OPTIONS)[] = [
 	'force',
 
 	'version',
+	'status',
 	'verbose'
 ];
 interface GitpodNativeParsedArgs extends NativeParsedArgs {
 	command?: boolean
+	'open-external'?: string[]
 }
 const OPTIONS: OptionDescriptions<GitpodNativeParsedArgs> = {
 	_: ALL_OPTIONS['_'],
 	command: {
 		type: 'boolean',
+	},
+	'open-external': {
+		type: 'string[]'
 	}
 };
 for (const key of OPTIONS_KEYS) {
@@ -84,7 +89,14 @@ async function main(processArgv: string[]): Promise<any> {
 		console.log(buildVersionMessage(product.version, product.commit));
 	}
 
-	// Just Code
+	// Status
+	else if (args.status) {
+		console.log(await sendCommand({
+			type: 'status'
+		}));
+	}
+
+	// Command
 	else if (args.command) {
 		const command = args._.shift();
 		assert(command, 'Arguments in `--command` mode should be in the format of `COMMAND ARG1 ARG2 ARGN`.');
@@ -93,7 +105,18 @@ async function main(processArgv: string[]): Promise<any> {
 			command,
 			args: args._
 		});
-	} else if (args['list-extensions'] || args['install-extension'] || args['uninstall-extension']) {
+	}
+
+	// open external URIs
+	else if (args['open-external']) {
+		await sendCommand({
+			type: 'openExternal',
+			uris: args['open-external']
+		});
+	}
+
+	// Extensionst Management
+	else if (args['list-extensions'] || args['install-extension'] || args['uninstall-extension']) {
 		console.log(await sendCommand({
 			type: 'extensionManagement',
 			list: args['list-extensions'] ? {
@@ -104,7 +127,10 @@ async function main(processArgv: string[]): Promise<any> {
 			uninstall: args['uninstall-extension'],
 			force: args['force']
 		}));
-	} else {
+	}
+
+	// Just Code
+	else {
 		const waitMarkerFilePath = args.wait ? createWaitMarkerFile(args.verbose) : undefined;
 		const fileURIs: string[] = [...args['file-uri'] || []];
 		const folderURIs: string[] = [...args['folder-uri'] || []];
