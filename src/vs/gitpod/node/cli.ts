@@ -16,8 +16,6 @@ import type { PipeCommand } from 'vs/workbench/api/node/extHostCLIServer';
 
 const OPTIONS_KEYS: (keyof typeof ALL_OPTIONS)[] = [
 	'help',
-	'version',
-	'verbose',
 
 	'diff',
 	'add',
@@ -26,7 +24,17 @@ const OPTIONS_KEYS: (keyof typeof ALL_OPTIONS)[] = [
 	'reuse-window',
 	'folder-uri',
 	'file-uri',
-	'wait'
+	'wait',
+
+	'list-extensions',
+	'show-versions',
+	'category',
+	'install-extension',
+	'uninstall-extension',
+	'force',
+
+	'version',
+	'verbose'
 ];
 interface GitpodNativeParsedArgs extends NativeParsedArgs {
 	command?: boolean
@@ -85,6 +93,17 @@ async function main(processArgv: string[]): Promise<any> {
 			command,
 			args: args._
 		});
+	} else if (args['list-extensions'] || args['install-extension'] || args['uninstall-extension']) {
+		console.log(await sendCommand({
+			type: 'extensionManagement',
+			list: args['list-extensions'] ? {
+				category: args.category,
+				showVersions: args['show-versions']
+			} : undefined,
+			install: args['install-extension'],
+			uninstall: args['uninstall-extension'],
+			force: args['force']
+		}));
 	} else {
 		const waitMarkerFilePath = args.wait ? createWaitMarkerFile(args.verbose) : undefined;
 		const fileURIs: string[] = [...args['file-uri'] || []];
