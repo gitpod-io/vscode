@@ -690,8 +690,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					const session = await loginGitHub(scopes);
 					return session;
 				} catch (e) {
-					vscode.window.showErrorMessage(`Sign in failed: ${e}`);
-					console.error(e);
+					console.error('GitHub sign in failed: ', e);
 					throw e;
 				}
 			},

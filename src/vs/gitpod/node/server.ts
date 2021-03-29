@@ -10,6 +10,7 @@ import * as cp from 'child_process';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as http from 'http';
+import * as yaml from 'js-yaml';
 import * as net from 'net';
 import * as os from 'os';
 import * as path from 'path';
@@ -45,7 +46,8 @@ import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/envi
 import { OPTIONS, parseArgs } from 'vs/platform/environment/node/argv';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
-import { IExtensionGalleryService, IExtensionManagementService, IGalleryExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionGalleryService, IExtensionManagementCLIService, IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
 import { ExtensionManagementChannel } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -205,44 +207,46 @@ function serveError(req: http.IncomingMessage, res: http.ServerResponse, errorCo
 	res.end(errorMessage);
 }
 
-async function installExtensionsFromServer(
-	extensionGalleryService: IExtensionGalleryService,
-	extensionManagementService: IExtensionManagementService,
+async function installInitialExtensions(
+	extensionManagementService: IExtensionManagementCLIService,
 	requestService: IRequestService,
 	fileService: IFileService,
 	logService: ILogService
 ): Promise<void> {
-	const pending: Promise<void>[] = [];
-	pending.push((async () => {
-		const ids = [
-			// 'eamodio.gitlens'
-		];
+	const pendingExtensions = (async () => {
+		const extensions = [];
 		try {
 			const workspaceInfoResponse = await util.promisify(infoServiceClient.workspaceInfo.bind(infoServiceClient, new WorkspaceInfoRequest(), supervisorMetadata, {
 				deadline: Date.now() + supervisorDeadlines.long
 			}))();
 			const workspaceContextUrl = URI.parse(workspaceInfoResponse.getWorkspaceContextUrl());
 			if (/github\.com/i.test(workspaceContextUrl.authority)) {
-				ids.push('github.vscode-pull-request-github');
+				extensions.push('github.vscode-pull-request-github');
+			}
+
+			let config: { vscode?: { extensions?: string[] } } | undefined;
+			try {
+				const content = await fs.promises.readFile(path.join(workspaceInfoResponse.getCheckoutLocation(), '.gitpod.yml'), 'utf-8');
+				config = yaml.safeLoad(content) as any;
+			} catch { }
+			if (config?.vscode?.extensions) {
+				const extensionIdRegex = /^([^.]+\.[^@]+)(@(\d+\.\d+\.\d+(-.*)?))?$/;
+				for (const extension of config.vscode.extensions) {
+					const normalizedExtension = extension.toLocaleLowerCase();
+					if (extensionIdRegex.exec(normalizedExtension)) {
+						extensions.push(normalizedExtension);
+					}
+				}
 			}
 		} catch (e) {
 			logService.error('code server: failed to detect workspace context dependent extensions:', e);
 		}
-		const extensions = await extensionGalleryService.getExtensions(ids, CancellationToken.None).catch(e => {
-			logService.error('code server: failed to resolve extensions:', e);
-			return [] as IGalleryExtension[];
-		});
-		await Promise.all(extensions.map(extension => (async () => {
-			try {
-				await extensionManagementService.installFromGallery(extension, {
-					isMachineScoped: true,
-					isBuiltin: false
-				});
-			} catch (e) {
-				logService.error(`code server: failed to install '${extension.identifier.id}' extension:`, e);
-			}
-		})()));
-	})());
+		return extensions;
+	})();
+
+	const vsixs: URI[] = [];
+	const pendingVsixs: Promise<void>[] = [];
+
 	if (process.env.GITPOD_RESOLVED_EXTENSIONS) {
 		let resolvedPlugins: ResolvedPlugins = {};
 		try {
@@ -257,9 +261,14 @@ async function installExtensionsFromServer(
 				// ignore user extensions installed in Theia, since we switched to the sync storage for them
 				continue;
 			}
-			pending.push(installExtensionFromConfig(resolvedPlugin.url, extensionManagementService, requestService, fileService, logService));
+			pendingVsixs.push(downloadInitialExtension(resolvedPlugin.url, requestService, fileService).then(vsix => {
+				vsixs.push(vsix);
+			}, e => {
+				logService.error(`code server: failed to download initial configured extension from '${resolvedPlugin.url}':`, e);
+			}));
 		}
 	}
+
 	if (process.env.GITPOD_EXTERNAL_EXTENSIONS) {
 		let external: string[] = [];
 		try {
@@ -268,34 +277,40 @@ async function installExtensionsFromServer(
 			logService.error('code server: failed to parse process.env.GITPOD_EXTERNAL_EXTENSIONS:', e);
 		}
 		for (const url of external) {
-			pending.push(installExtensionFromConfig(url, extensionManagementService, requestService, fileService, logService));
+			pendingVsixs.push(downloadInitialExtension(url, requestService, fileService).then(vsix => {
+				vsixs.push(vsix);
+			}, e => {
+				logService.error(`code server: failed to download initial external extension from '${url}':`, e);
+			}));
 		}
 	}
-	await Promise.all(pending);
+
+	await Promise.all(pendingVsixs);
+	// first install resolved by server
+	await extensionManagementService.installExtensions(vsixs, [], true, false, {
+		log: s => logService.debug(s),
+		error: s => logService.error(s)
+	}).catch(e => {
+		logService.error(`code server: failed to install intial extensions resolved by Gitpod server:`, e);
+	});
+	// now try to install from .gitpod.yml (it will install only missing extensions)
+	await extensionManagementService.installExtensions(await pendingExtensions, [], true, false, {
+		log: s => logService.debug(s),
+		error: s => logService.error(s)
+	}).catch(e => {
+		logService.error(`code server: failed to install intial extensions resolved by Code server:`, e);
+	});
 }
-async function installExtensionFromConfig(
-	url: string,
-	extensionManagementService: IExtensionManagementService,
-	requestService: IRequestService,
-	fileService: IFileService,
-	logService: ILogService
-): Promise<void> {
-	try {
-		const context = await requestService.request({ type: 'GET', url }, CancellationToken.None);
-		if (context.res.statusCode !== 200) {
-			const message = await asText(context);
-			throw new Error(`expected 200, got back ${context.res.statusCode} instead.\n\n${message}`);
-		}
-		const downloadedLocation = path.join(os.tmpdir(), generateUuid());
-		const target = URI.file(downloadedLocation);
-		await fileService.writeFile(target, context.stream);
-		await extensionManagementService.install(target, {
-			isMachineScoped: true,
-			isBuiltin: false
-		});
-	} catch (e) {
-		logService.error(`code server: failed to install configured extension from '${url}':`, e);
+async function downloadInitialExtension(url: string, requestService: IRequestService, fileService: IFileService): Promise<URI> {
+	const context = await requestService.request({ type: 'GET', url }, CancellationToken.None);
+	if (context.res.statusCode !== 200) {
+		const message = await asText(context);
+		throw new Error(`expected 200, got back ${context.res.statusCode} instead.\n\n${message}`);
 	}
+	const downloadedLocation = path.join(os.tmpdir(), generateUuid());
+	const target = URI.file(downloadedLocation);
+	await fileService.writeFile(target, context.stream);
+	return target;
 }
 
 async function main(): Promise<void> {
@@ -430,8 +445,8 @@ async function main(): Promise<void> {
 	const synchingTasks = (async () => {
 		const tasks = new Map<string, TaskStatus>();
 		logService.info('code server: synching tasks...');
-		let syhched = false;
-		while (!syhched) {
+		let synched = false;
+		while (!synched) {
 			try {
 				const req = new TasksStatusRequest();
 				req.setObserve(true);
@@ -444,7 +459,7 @@ async function main(): Promise<void> {
 							tasks.set(status.getTerminal(), status);
 							return status.getState() !== TaskState.OPENING;
 						})) {
-							syhched = true;
+							synched = true;
 							stream.cancel();
 						}
 					});
@@ -454,11 +469,11 @@ async function main(): Promise<void> {
 					logService.error('code server: listening task updates failed:', err);
 				}
 			}
-			if (!syhched) {
+			if (!synched) {
 				await new Promise(resolve => setTimeout(resolve, 1000));
 			}
 		}
-		logService.info('code server: tasks syhched');
+		logService.info('code server: tasks synched');
 		return tasks;
 	})();
 
@@ -633,6 +648,7 @@ async function main(): Promise<void> {
 
 	services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
 	services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
+	services.set(IExtensionManagementCLIService, new SyncDescriptor(ExtensionManagementCLIService));
 
 	services.set(IRequestService, new SyncDescriptor(RequestService));
 
@@ -642,12 +658,10 @@ async function main(): Promise<void> {
 	// Startup
 	const instantiationService = new InstantiationService(services);
 	instantiationService.invokeFunction(accessor => {
-		const extensionGalleryService = accessor.get(IExtensionGalleryService);
 		const extensionManagementService = accessor.get(IExtensionManagementService);
 		channelServer.registerChannel('extensions', new ExtensionManagementChannel(extensionManagementService, requestContext => new URITransformer(rawURITransformerFactory(requestContext))));
-		installExtensionsFromServer(
-			extensionGalleryService,
-			extensionManagementService,
+		installInitialExtensions(
+			accessor.get(IExtensionManagementCLIService),
 			accessor.get(IRequestService),
 			accessor.get(IFileService),
 			logService
