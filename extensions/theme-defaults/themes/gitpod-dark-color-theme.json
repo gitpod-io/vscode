@@ -19,7 +19,7 @@
         "list.activeSelectionForeground": "#F3F3F3",
         "list.inactiveSelectionForeground": "#F3F3F3",
         "list.inactiveSelectionBackground": "#44403C",
-        "minimap.background": "#292524",
+        "minimap.background": "#12100C",
         "minimapSlider.activeBackground": "#44403C",
         "tab.inactiveBackground": "#1C1917",
         "editor.selectionBackground": "#A35800",
