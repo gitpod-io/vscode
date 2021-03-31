@@ -425,9 +425,10 @@ async function doStart(): Promise<IDisposable> {
 		initialColorTheme: {
 			themeType: ColorScheme.LIGHT,
 			colors: {
-				'statusBarItem.remoteBackground': '#292524',
+				'statusBarItem.remoteBackground': '#FF8A00',
 				'statusBarItem.remoteForeground': '#f9f9f9',
-				'statusBar.background': '#FF8A00',
+				'statusBar.background': '#F3F3F3',
+				'statusBar.foreground': '#292524',
 				'statusBar.noFolderBackground': '#FF8A00',
 				'statusBar.debuggingBackground': '#FF8A00',
 				'sideBar.background': '#fcfcfc',
