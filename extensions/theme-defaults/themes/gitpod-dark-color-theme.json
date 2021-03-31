@@ -2,12 +2,27 @@
 	"name": "Gitpod Dark",
 	"include": "./dark_plus.json",
 	"colors": {
-		"statusBarItem.remoteBackground": "#292524",
+		"statusBarItem.remoteBackground": "#D67400",
         "statusBarItem.remoteForeground": "#f9f9f9",
-        "statusBar.background": "#FF8A00",
-        "statusBar.noFolderBackground": "#FF8A00",
-        "statusBar.debuggingBackground": "#FF8A00",
-        "button.background": "#FF8A00",
-        "button.foreground": "#ffffff"
+        "statusBar.background": "#252526",
+        "statusBar.foreground": "#F3F3F3",
+        "statusBar.noFolderBackground": "#D67400",
+        "statusBar.debuggingBackground": "#D67400",
+        "sideBar.background": "#1C1917",
+        "sideBarSectionHeader.background": "#252526",
+        "activityBar.background": "#292524",
+        "activityBar.foreground": "#F3F3F3",
+        "editor.background": "#292524",
+        "button.background": "#D67400",
+        "button.foreground": "#ffffff",
+        "list.activeSelectionBackground": "#57534E",
+        "list.activeSelectionForeground": "#F3F3F3",
+        "list.inactiveSelectionForeground": "#F3F3F3",
+        "list.inactiveSelectionBackground": "#44403C",
+        "minimap.background": "#292524",
+        "minimapSlider.activeBackground": "#44403C",
+        "tab.inactiveBackground": "#1C1917",
+        "editor.selectionBackground": "#A35800",
+        "editor.inactiveSelectionBackground": "#7A4200"
 	}
 }
