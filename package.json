@@ -60,16 +60,16 @@
     "extensions-ci": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js extensions-ci"
   },
   "dependencies": {
+    "@gitpod/local-app-api-grpcweb": "ak-vscode-tunnel-provider",
     "@gitpod/supervisor-api-grpc": "main",
-    "@grpc/grpc-js": "latest",
     "applicationinsights": "1.0.8",
     "chokidar": "3.5.1",
     "graceful-fs": "4.2.3",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.3",
     "iconv-lite-umd": "0.6.8",
-    "jschardet": "2.3.0",
     "js-yaml": "^3.10.0",
+    "jschardet": "2.3.0",
     "keytar": "7.2.0",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.3",

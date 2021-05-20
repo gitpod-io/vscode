@@ -2,6 +2,37 @@
 # yarn lockfile v1
 
 
+"@gitpod/local-app-api-grpcweb@ak-vscode-tunnel-provider":
+  version "0.1.5-ak-vscode-tunnel-provider.24"
+  resolved "https://registry.yarnpkg.com/@gitpod/local-app-api-grpcweb/-/local-app-api-grpcweb-0.1.5-ak-vscode-tunnel-provider.24.tgz#30861aa39e349e912c765dc8abab4e28216c2382"
+  integrity sha512-RtYrrUDPbQLMV3P7ZhPk9UtG9JBWeg6fUNuCRwrW4DUYyaOc8Ws5GlV9qiyFX86ST83otMohWyAUWs2urBU69A==
+  dependencies:
+    "@gitpod/supervisor-api-grpcweb" "0.1.5-ak-vscode-tunnel-provider.23"
+    "@improbable-eng/grpc-web" "0.14.0"
+    google-protobuf "^3.17.0"
+
+"@gitpod/supervisor-api-grpcweb@0.1.5-ak-vscode-tunnel-provider.23":
+  version "0.1.5-ak-vscode-tunnel-provider.23"
+  resolved "https://registry.yarnpkg.com/@gitpod/supervisor-api-grpcweb/-/supervisor-api-grpcweb-0.1.5-ak-vscode-tunnel-provider.23.tgz#58adc4b3e59ddde67a1c4d72d740ccc28dc30444"
+  integrity sha512-ZewEAauo442ijqlTUrxC1KpLji1XL0WHp5KGEFo8r21gSj+tglTzwC7AHWOZi6jTGEk4rfoso8xzIjLt8QgiPw==
+
+"@improbable-eng/grpc-web@0.14.0":
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/@improbable-eng/grpc-web/-/grpc-web-0.14.0.tgz#a71c5af471dcef6a2810798f71f93ed8d6ac3817"
+  integrity sha512-ag1PTMWpBZKGi6GrEcZ4lkU5Qag23Xjo10BmnK9qyx4TMmSVcWmQ3rECirfQzm2uogrM9n1M6xfOpFsJP62ivA==
+  dependencies:
+    browser-headers "^0.4.1"
+
+browser-headers@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/browser-headers/-/browser-headers-0.4.1.tgz#4308a7ad3b240f4203dbb45acedb38dc2d65dd02"
+  integrity sha512-CA9hsySZVo9371qEHjHZtYxV2cFtVj5Wj/ZHi8ooEsrtm4vOnl9Y9HmyYWk9q+05d7K3rdoAE0j3MVEFVvtQtg==
+
+google-protobuf@^3.17.0:
+  version "3.17.1"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.17.1.tgz#d5224fe7dc931f1a69cbdc5cb6e3d69ae74da651"
+  integrity sha512-CHisE5cwd66w6y/K4K7x2N+SSZ0HgPBQwky7lKsj2vr4nXPuXQ2uUZgMF/ctXnd4xHL747Lh8LUgby2nA8gViA==
+
 iconv-lite-umd@0.6.8:
   version "0.6.8"
   resolved "https://registry.yarnpkg.com/iconv-lite-umd/-/iconv-lite-umd-0.6.8.tgz#5ad310ec126b260621471a2d586f7f37b9958ec0"

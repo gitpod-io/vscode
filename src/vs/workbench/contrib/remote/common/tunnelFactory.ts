@@ -45,6 +45,9 @@ export class TunnelFactoryContribution extends Disposable implements IWorkbenchC
 							resolve(undefined);
 							return;
 						}
+						tunnel.onDidDispose(() => {
+							remoteExplorerService.close(tunnel.remoteAddress);
+						});
 						const localAddress = tunnel.localAddress.startsWith('http') ? tunnel.localAddress : `http://${tunnel.localAddress}`;
 						const remoteTunnel: RemoteTunnel = {
 							tunnelRemotePort: tunnel.remoteAddress.port,

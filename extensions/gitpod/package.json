@@ -92,8 +92,26 @@
         "icon": "$(unlock)"
       },
       {
+        "command": "gitpod.ports.tunnelNetwork",
+        "title": "%tunnelNetwork%",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "gitpod.ports.tunnelHost",
+        "title": "%tunnelHost%",
+        "icon": "$(eye)"
+      },
+      {
         "command": "gitpod.extensions.addToConfig",
         "title": "%addToConfig%"
+      },
+      {
+        "command": "gitpod.dev.connectLocalApp",
+        "title": "%connectLocalApp%"
+      },
+      {
+        "command": "gitpod.dev.enableForwardedPortsView",
+        "title": "%enableForwardedPortsView%"
       }
     ],
     "menus": {
@@ -205,24 +223,34 @@
       ],
       "view/item/context": [
         {
-          "command": "gitpod.ports.preview",
-          "when": "view == gitpod.workspace && viewItem =~ /exposed-served-port$/",
-          "group": "inline"
+          "command": "gitpod.ports.tunnelNetwork",
+          "when": "view == gitpod.workspace && viewItem =~ /host/ && viewItem =~ /tunneled/",
+          "group": "inline@1"
         },
         {
-          "command": "gitpod.ports.openBrowser",
-          "when": "view == gitpod.workspace && viewItem =~ /exposed-served-port$/",
-          "group": "inline"
+          "command": "gitpod.ports.tunnelHost",
+          "when": "view == gitpod.workspace && viewItem =~ /network/ && viewItem =~ /tunneled/",
+          "group": "inline@1"
         },
         {
           "command": "gitpod.ports.makePublic",
-          "when": "view == gitpod.workspace && viewItem =~ /^private/",
-          "group": "inline"
+          "when": "view == gitpod.workspace && viewItem =~ /private/",
+          "group": "inline@2"
         },
         {
           "command": "gitpod.ports.makePrivate",
-          "when": "view == gitpod.workspace && viewItem =~ /^public/",
-          "group": "inline"
+          "when": "view == gitpod.workspace && viewItem =~ /public/",
+          "group": "inline@2"
+        },
+        {
+          "command": "gitpod.ports.preview",
+          "when": "view == gitpod.workspace && viewItem =~ /exposed/ || viewItem =~ /tunneled/",
+          "group": "inline@3"
+        },
+        {
+          "command": "gitpod.ports.openBrowser",
+          "when": "view == gitpod.workspace && viewItem =~ /exposed/ || viewItem =~ /tunneled/",
+          "group": "inline@4"
         }
       ],
       "commandPalette": [
@@ -241,6 +269,18 @@
         {
           "command": "gitpod.ports.makePrivate",
           "when": "false"
+        },
+        {
+          "command": "gitpod.ports.tunnelNetwork",
+          "when": "false"
+        },
+        {
+          "command": "gitpod.ports.tunnelHost",
+          "when": "false"
+        },
+        {
+          "command": "gitpod.extensions.connectLocalApp",
+          "when": "gitpod.localAppConnected == false"
         }
       ]
     },
@@ -278,7 +318,6 @@
   "dependencies": {
     "@gitpod/gitpod-protocol": "main",
     "@gitpod/supervisor-api-grpc": "main",
-    "@grpc/grpc-js": "latest",
     "bufferutil": "^4.0.1",
     "node-fetch": "^2.6.1",
     "reconnecting-websocket": "^4.4.0",

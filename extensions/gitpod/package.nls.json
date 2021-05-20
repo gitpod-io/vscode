@@ -17,5 +17,9 @@
 	"openPreview": "Open Preview",
 	"makePrivate": "Make Private",
 	"makePublic": "Make Public",
-	"addToConfig": "Add to .gitpod.yml"
+	"tunnelNetwork": "Tunnel on all interfaces",
+	"tunnelHost": "Tunnel on localhost",
+	"addToConfig": "Add to .gitpod.yml",
+	"connectLocalApp": "Developer: Connect to Local Gitpod App",
+	"enableForwardedPortsView": "Developer: Enable Tunneled Ports View"
 }

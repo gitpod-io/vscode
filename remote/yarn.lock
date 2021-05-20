@@ -3,14 +3,14 @@
 
 
 "@gitpod/supervisor-api-grpc@main":
-  version "0.1.5-main.822"
-  resolved "https://registry.yarnpkg.com/@gitpod/supervisor-api-grpc/-/supervisor-api-grpc-0.1.5-main.822.tgz#8e0b8d3506c813a2cac89d3e2e9440dbd54a35e6"
-  integrity sha512-Yb1mw+Ba6EdU8TisH1NPc9DXNP+YKfVawn5r8lnIOP/ygRmcaaeJpJUGHppHtKVo5yw8jKfd2utabh2urahvTg==
+  version "0.1.5-main.828"
+  resolved "https://registry.yarnpkg.com/@gitpod/supervisor-api-grpc/-/supervisor-api-grpc-0.1.5-main.828.tgz#91925ed01584859a275a7f9e226565f6a3d4d06a"
+  integrity sha512-I1m5+YjFEsWJ1ZEKv2kRHm67OWEKa04gWv0uocyihOw3eteVFXWiJeQCUp02/pPecM7oE3KYoM8FNw6poKbzjg==
   dependencies:
     "@grpc/grpc-js" "^1.1.5"
     google-protobuf "^3.15.8"
 
-"@grpc/grpc-js@^1.1.5", "@grpc/grpc-js@latest":
+"@grpc/grpc-js@^1.1.5":
   version "1.2.12"
   resolved "https://registry.yarnpkg.com/@grpc/grpc-js/-/grpc-js-1.2.12.tgz#0153f27512acf69184bb52c0a1035ca91d6c14b0"
   integrity sha512-+gPCklP1eqIgrNPyzddYQdt9+GvZqPlLpIjIo+TveE+gbtp74VV1A2ju8ExeO8ma8f7MbpaGZx/KJPYVWL9eDw==

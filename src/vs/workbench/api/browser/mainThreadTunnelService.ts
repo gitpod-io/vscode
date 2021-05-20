@@ -131,7 +131,7 @@ export class MainThreadTunnelService extends Disposable implements MainThreadTun
 		return (await this.tunnelService.tunnels).map(tunnel => {
 			return {
 				remoteAddress: { port: tunnel.tunnelRemotePort, host: tunnel.tunnelRemoteHost },
-				localAddress: tunnel.localAddress
+				localAddress: tunnel.localAddress,
 			};
 		});
 	}
