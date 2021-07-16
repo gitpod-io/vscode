@@ -4,8 +4,9 @@
   "description": "%description%",
   "publisher": "gitpod",
   "version": "0.0.1",
+  "license": "MIT",
   "engines": {
-    "vscode": "^1.49.0"
+    "vscode": "^1.58.2"
   },
   "enableProposedApi": true,
   "categories": [
