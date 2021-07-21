@@ -3,6 +3,11 @@
   "displayName": "%displayName%",
   "description": "%description%",
   "publisher": "gitpod",
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gitpod-io/vscode"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.49.0"
@@ -357,7 +362,21 @@
         "id": "github",
         "label": "GitHub"
       }
-    ]
+    ],
+    "walkthroughs": [{
+      "id": "gitpodOnboarding",
+      "title": "Get Started with Gitpod",
+      "description": "Learn how to leverage Gitpod in your daily workflow.",
+      "isFeatured": true,
+      "steps": [{
+        "id": "whatisgitpod",
+        "title": "What is Gitpod?",
+        "description": "A quick introduction to get you started.",
+        "media": {
+          "markdown": "walkthroughs/what-is-gitpod.md"
+        }
+      }]
+    }]
   },
   "scripts": {
     "compile": "gulp compile-extension:gitpod",

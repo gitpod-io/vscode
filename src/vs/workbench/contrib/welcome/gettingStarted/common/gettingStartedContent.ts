@@ -126,7 +126,7 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 		id: 'Setup',
 		title: localize('gettingStarted.setup.title', "Get Started with VS Code"),
 		description: localize('gettingStarted.setup.description', "Discover the best customizations to make VS Code yours."),
-		isFeatured: true,
+		isFeatured: false,
 		icon: setupIcon,
 		next: 'Beginner',
 		content: {
@@ -200,7 +200,7 @@ export const walkthroughs: GettingStartedWalkthroughContent = [
 		id: 'Beginner',
 		title: localize('gettingStarted.beginner.title', "Learn the Fundamentals"),
 		icon: beginnerIcon,
-		isFeatured: true,
+		isFeatured: false,
 		next: 'Intermediate',
 		description: localize('gettingStarted.beginner.description', "Jump right into VS Code and get an overview of the must-have features."),
 		content: {
