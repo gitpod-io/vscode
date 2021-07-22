@@ -3,9 +3,9 @@
 
 
 "@gitpod/gitpod-protocol@main":
-  version "0.1.5-main.828"
-  resolved "https://registry.yarnpkg.com/@gitpod/gitpod-protocol/-/gitpod-protocol-0.1.5-main.828.tgz#e0add6fcb3985127badc7abca1a4ee797265455e"
-  integrity sha512-I4Q3cgXNsOrLHkU+n9qDAASfEP+qXiLzlES/lJdAEXSJaXmzHa3+Noyw6ridXgzrA76wOB59cMBvBNSQKSV6Hg==
+  version "0.1.5-main.1145"
+  resolved "https://registry.yarnpkg.com/@gitpod/gitpod-protocol/-/gitpod-protocol-0.1.5-main.1145.tgz#8935775dbdd5021b16cce0a87e6bfd191f817c5e"
+  integrity sha512-dDlh7YZfs2SDibtyK81bvKzCiowN+m6MlH5GM2dmnwxIA8LuW8LZVpGbZhK1FmnSHsHFB/JbzU/gfCyN1xesmw==
   dependencies:
     ajv "^6.5.4"
     analytics-node "^4.0.1"
@@ -15,12 +15,12 @@
     opentracing "^0.14.4"
     prom-client "^10.2.0"
     random-number-csprng "^1.0.2"
-    reconnecting-websocket "^4.2.0"
+    reconnecting-websocket "^4.4.0"
     reflect-metadata "^0.1.10"
     uuid "^3.3.3"
     vscode-uri "^1.0.1"
     vscode-ws-jsonrpc "^0.2.0"
-    ws "^5.2.2"
+    ws "^7.4.6"
 
 "@gitpod/supervisor-api-grpc@main":
   version "0.1.5-main.1032"
@@ -141,11 +141,6 @@ arrify@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
-
-async-limiter@~1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
-  integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -573,7 +568,7 @@ random-number-csprng@^1.0.2:
     bluebird "^3.3.3"
     create-error "^0.3.1"
 
-reconnecting-websocket@^4.2.0, reconnecting-websocket@^4.4.0:
+reconnecting-websocket@^4.4.0:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/reconnecting-websocket/-/reconnecting-websocket-4.4.0.tgz#3b0e5b96ef119e78a03135865b8bb0af1b948783"
   integrity sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng==
@@ -670,17 +665,15 @@ vscode-ws-jsonrpc@^0.2.0:
   dependencies:
     vscode-jsonrpc "^5.0.0"
 
-ws@^5.2.2:
-  version "5.2.2"
-  resolved "https://registry.yarnpkg.com/ws/-/ws-5.2.2.tgz#dffef14866b8e8dc9133582514d1befaf96e980f"
-  integrity sha512-jaHFD6PFv6UgoIVda6qZllptQsMlDEJkTQcybzzXDYM1XO9Y8em691FGMPmM46WGyLU4z9KMgQN+qrux/nhlHA==
-  dependencies:
-    async-limiter "~1.0.0"
-
 ws@^7.3.1:
   version "7.3.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
   integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
+
+ws@^7.4.6:
+  version "7.5.3"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.5.3.tgz#160835b63c7d97bfab418fc1b8a9fced2ac01a74"
+  integrity sha512-kQ/dHIzuLrS6Je9+uv81ueZomEwH0qVYstcAQ4/Z93K8zeko9gtAbttJWzoC5ukqXY1PpoouV3+VSOqEAFt5wg==
 
 xorshift@^0.2.0:
   version "0.2.1"

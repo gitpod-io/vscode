@@ -71,8 +71,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	//#region server connection
 	const factory = new JsonRpcProxyFactory<GitpodServer>();
-	type UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'controlAdmission', 'sendHeartBeat'];
-	const gitpodFunctions: UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'controlAdmission', 'sendHeartBeat'];
+	type UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
+	const gitpodFunctions: UsedGitpodFunction = ['getWorkspace', 'openPort', 'stopWorkspace', 'setWorkspaceTimeout', 'getWorkspaceTimeout', 'getLoggedInUser', 'takeSnapshot', 'controlAdmission', 'sendHeartBeat', 'trackEvent'];
 	type Union<Tuple extends any[], Union = never> = Tuple[number] | Union;
 	const gitpodService: Omit<GitpodServiceImpl<GitpodClient, GitpodServer>, 'server'> & {
 		server: Pick<GitpodServer, Union<UsedGitpodFunction>>
@@ -147,6 +147,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'gitpod.workspaceOwned', workspaceOwned);
 		return workspaceOwned;
 	})();
+
+	gitpodService.server.trackEvent({
+		event: 'status_rendered',
+		properties: {
+			workspaceId,
+			phase: 'vsc_opened',
+		}
+	}).catch(console.error);
 	//#endregion
 
 	//#region workspace commands
@@ -216,6 +224,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 		}));
 	})();
+	//#endregion
 
 	//#region workspace sharing
 	(async () => {
